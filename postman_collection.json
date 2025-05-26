@@ -1,0 +1,105 @@
+{
+  "info": {
+    "name": "Meta Messenger Webhook Test",
+    "description": "API collection for testing Meta Messenger webhook endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "verify_token",
+      "value": "meta_test_webhook_2024",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/",
+          "host": ["{{base_url}}"],
+          "path": [""]
+        },
+        "description": "Check server status and environment configuration"
+      },
+      "response": []
+    },
+    {
+      "name": "Webhook Verification",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/webhook?hub.mode=subscribe&hub.verify_token={{verify_token}}&hub.challenge=test123",
+          "host": ["{{base_url}}"],
+          "path": ["webhook"],
+          "query": [
+            {
+              "key": "hub.mode",
+              "value": "subscribe"
+            },
+            {
+              "key": "hub.verify_token",
+              "value": "{{verify_token}}"
+            },
+            {
+              "key": "hub.challenge",
+              "value": "test123"
+            }
+          ]
+        },
+        "description": "Test webhook verification - should return 'test123'"
+      },
+      "response": []
+    },
+    {
+      "name": "Send Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/send",
+          "host": ["{{base_url}}"],
+          "path": ["send"]
+        },
+        "description": "Send 'Hello from my bot' to hardcoded PSID"
+      },
+      "response": []
+    },
+    {
+      "name": "Simulate Webhook Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"object\": \"page\",\n  \"entry\": [\n    {\n      \"id\": \"123456789\",\n      \"time\": 1234567890,\n      \"messaging\": [\n        {\n          \"sender\": {\n            \"id\": \"test_user_psid\"\n          },\n          \"recipient\": {\n            \"id\": \"page_id\"\n          },\n          \"timestamp\": 1234567890,\n          \"message\": {\n            \"mid\": \"test_message_id\",\n            \"text\": \"Hello from test user\"\n          }\n        }\n      ]\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/webhook",
+          "host": ["{{base_url}}"],
+          "path": ["webhook"]
+        },
+        "description": "Simulate incoming message from Facebook (for testing webhook reception)"
+      },
+      "response": []
+    }
+  ]
+}
